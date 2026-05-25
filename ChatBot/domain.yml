@@ -1,0 +1,113 @@
+version: "3.1"
+
+intents:
+  - greet
+  - goodbye
+  - abrir_chamado
+  - consultar_status
+  - atualizar_email
+  - bot_challenge
+
+slots:
+  nome:
+    type: text
+    influence_conversation: false
+    mappings:
+      - type: from_text
+        conditions:
+          - active_loop: chamado_form
+            requested_slot: nome
+  telefone:
+    type: text
+    influence_conversation: false
+    mappings:
+      - type: from_text
+        conditions:
+          - active_loop: chamado_form
+            requested_slot: telefone
+          - active_loop: email_form
+            requested_slot: telefone
+  modelo:
+    type: text
+    influence_conversation: false
+    mappings:
+      - type: from_text
+        conditions:
+          - active_loop: chamado_form
+            requested_slot: modelo
+  problema:
+    type: text
+    influence_conversation: false
+    mappings:
+      - type: from_text
+        conditions:
+          - active_loop: chamado_form
+            requested_slot: problema
+  id_ordem:
+    type: text
+    influence_conversation: false
+    mappings:
+      - type: from_text
+        conditions:
+          - active_loop: consulta_form
+            requested_slot: id_ordem
+  novo_email:
+    type: text
+    influence_conversation: false
+    mappings:
+      - type: from_text
+        conditions:
+          - active_loop: email_form
+            requested_slot: novo_email
+
+forms:
+  chamado_form:
+    required_slots:
+      - nome
+      - telefone
+      - modelo
+      - problema
+  consulta_form:
+    required_slots:
+      - id_ordem
+  email_form:
+    required_slots:
+      - telefone
+      - novo_email
+
+actions:
+  - action_cadastrar_chamado
+  - action_consultar_status
+  - action_atualizar_email
+
+responses:
+  utter_greet:
+    - text: "Olá! Bem-vindo à TechRepair 🔧\nComo posso te ajudar?\n- Abrir um chamado\n- Consultar status do conserto\n- Atualizar seu e-mail"
+
+  utter_goodbye:
+    - text: "Até mais! Se precisar, é só chamar. 👋"
+
+  utter_iamabot:
+    - text: "Eu sou o assistente virtual da TechRepair! 🤖"
+
+  utter_ask_nome:
+    - text: "Qual é o seu nome?"
+
+  utter_ask_telefone:
+    - text: "Qual é o seu telefone? (somente números)"
+
+  utter_ask_modelo:
+    - text: "Qual é o modelo do celular? (ex: iPhone 13, Galaxy S22)"
+
+  utter_ask_problema:
+    - text: "Descreva o problema do aparelho:"
+
+  utter_ask_id_ordem:
+    - text: "Informe o número da Ordem de Serviço ou seu telefone para consulta:"
+
+  utter_ask_novo_email:
+    - text: "Qual será o novo e-mail?"
+
+session_config:
+  session_expiration_time: 60
+  carry_over_slots_to_new_session: true

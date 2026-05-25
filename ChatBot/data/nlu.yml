@@ -1,0 +1,80 @@
+version: "3.1"
+
+nlu:
+- intent: greet
+  examples: |
+    - oi
+    - olá
+    - bom dia
+    - boa tarde
+    - boa noite
+    - eae
+    - opa
+    - hey
+    - hello
+    - fala
+    - salve
+    - e aí
+
+- intent: goodbye
+  examples: |
+    - tchau
+    - até mais
+    - bye
+    - falou
+    - até logo
+    - flw
+    - adeus
+    - valeu tchau
+    - obrigado tchau
+
+- intent: abrir_chamado
+  examples: |
+    - quero abrir um chamado
+    - preciso de conserto
+    - meu celular quebrou
+    - quero registrar um problema
+    - abrir ordem de serviço
+    - meu aparelho está com defeito
+    - preciso consertar meu celular
+    - quero abrir uma ordem
+    - cadastrar um chamado
+    - registrar conserto
+    - meu telefone não liga
+    - tela do celular quebrou
+    - quero levar meu celular pra conserto
+    - meu celular não carrega
+
+- intent: consultar_status
+  examples: |
+    - como está meu conserto
+    - qual o status do meu aparelho
+    - quero saber do meu chamado
+    - meu celular já ficou pronto
+    - consultar status
+    - ver status da ordem
+    - como está a ordem de serviço
+    - meu conserto já terminou
+    - quero saber do meu conserto
+    - verificar andamento do conserto
+    - status do meu aparelho
+
+- intent: atualizar_email
+  examples: |
+    - quero mudar meu email
+    - atualizar meu e-mail
+    - trocar email de contato
+    - quero alterar meu email
+    - mudar meu e-mail
+    - preciso atualizar meu email
+    - alterar email cadastrado
+    - quero colocar outro email
+    - mudar email
+
+- intent: bot_challenge
+  examples: |
+    - você é um robô?
+    - é um bot?
+    - estou falando com uma pessoa?
+    - você é humano?
+    - é uma máquina?
