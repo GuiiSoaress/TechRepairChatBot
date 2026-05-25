@@ -1,10 +1,10 @@
-# Importa o conector do MySQL
+# importando o mysql connector pra conectar no banco
 import mysql.connector
 
-# Importa tipos para anotação
+# imports de tipagem
 from typing import Any, Text, Dict, List
 
-# Importa classes base do Rasa SDK
+# imports do rasa pra criar as actions
 from rasa_sdk import Action, Tracker
 from rasa_sdk.executor import CollectingDispatcher
 from rasa_sdk.events import SlotSet
@@ -12,9 +12,7 @@ from rasa_sdk.events import SlotSet
 from datetime import date
 
 
-# -------------------------------------------------------
-# Função auxiliar para conectar ao banco de dados
-# -------------------------------------------------------
+# funcao que faz a conexao com o banco de dados mysql
 def get_db_connection():
     return mysql.connector.connect(
         host="localhost",
@@ -24,10 +22,8 @@ def get_db_connection():
     )
 
 
-# -------------------------------------------------------
-# Ação 1: Cadastrar Chamado (INSERT)
-# O formulário chamado_form já coletou: nome, telefone, modelo, problema
-# -------------------------------------------------------
+# acao pra cadastrar o chamado no banco
+# o formulario ja pegou os dados: nome, telefone, email, modelo e problema
 class ActionCadastrarChamado(Action):
 
     def name(self) -> Text:
@@ -35,34 +31,35 @@ class ActionCadastrarChamado(Action):
 
     def run(self, dispatcher: CollectingDispatcher, tracker: Tracker, domain: Dict[Text, Any]) -> List[Dict[Text, Any]]:
 
-        # Pega os valores dos slots já preenchidos pelo formulário
+        # pegando os dados que o usuario digitou no chat
         nome = tracker.get_slot("nome")
         telefone = tracker.get_slot("telefone")
+        email = tracker.get_slot("email") or "nao informado"
         modelo = tracker.get_slot("modelo")
         problema = tracker.get_slot("problema")
 
-        # Abre a conexão com o banco
+        # conectando no banco
         conn = get_db_connection()
         cursor = conn.cursor(dictionary=True)
 
         try:
-            # Verifica se o cliente já existe pelo telefone
+            # vendo se esse cliente ja ta cadastrado pelo telefone
             cursor.execute("SELECT id FROM clientes WHERE telefone = %s", (telefone,))
             cliente = cursor.fetchone()
 
             if cliente:
-                # Se já existe, usa o id dele
+                # ja existe, entao pega o id dele
                 id_cliente = cliente["id"]
             else:
-                # Se não existe, cadastra o cliente
+                # nao existe, entao cadastra um novo
                 cursor.execute(
                     "INSERT INTO clientes (nome, telefone, email) VALUES (%s, %s, %s)",
-                    (nome, telefone, "nao informado")
+                    (nome, telefone, email)
                 )
                 conn.commit()
                 id_cliente = cursor.lastrowid
 
-            # Cadastra o dispositivo
+            # cadastrando o celular do cliente
             cursor.execute(
                 "INSERT INTO dispositovos (modelo, marca, id_clientes) VALUES (%s, %s, %s)",
                 (modelo, "Não informada", id_cliente)
@@ -70,7 +67,7 @@ class ActionCadastrarChamado(Action):
             conn.commit()
             id_dispositivo = cursor.lastrowid
 
-            # Cria a ordem de serviço com status 'Aguardando'
+            # criando a ordem de servico, comeca como 'Aguardando'
             data_hoje = date.today().strftime("%Y-%m-%d")
             cursor.execute(
                 "INSERT INTO ordens_servico (descricao_problema, data_abertura, status, id_tecnicos, id_dispositivos) VALUES (%s, %s, %s, %s, %s)",
@@ -79,7 +76,7 @@ class ActionCadastrarChamado(Action):
             conn.commit()
             id_ordem = cursor.lastrowid
 
-            # Envia confirmação ao usuário
+            # manda a mensagem de confirmacao pro usuario
             dispatcher.utter_message(
                 text=f"✅ Chamado #{id_ordem} aberto com sucesso!\n"
                      f"📱 Aparelho: {modelo}\n"
@@ -90,22 +87,21 @@ class ActionCadastrarChamado(Action):
         except Exception as e:
             dispatcher.utter_message(text=f"Erro ao cadastrar chamado: {str(e)}")
 
-        # Fecha a conexão
+        # fechando a conexao
         conn.close()
 
-        # Limpa os slots depois de usar
+        # limpando os slots pra nao dar problema depois
         return [
             SlotSet("nome", None),
             SlotSet("telefone", None),
+            SlotSet("email", None),
             SlotSet("modelo", None),
             SlotSet("problema", None)
         ]
 
 
-# -------------------------------------------------------
-# Ação 2: Consultar Status (SELECT)
-# O formulário consulta_form já coletou: id_ordem
-# -------------------------------------------------------
+# acao pra consultar o status de um chamado
+# o formulario ja pegou o id da ordem ou telefone
 class ActionConsultarStatus(Action):
 
     def name(self) -> Text:
@@ -113,15 +109,15 @@ class ActionConsultarStatus(Action):
 
     def run(self, dispatcher: CollectingDispatcher, tracker: Tracker, domain: Dict[Text, Any]) -> List[Dict[Text, Any]]:
 
-        # Pega o valor do slot preenchido pelo formulário
+        # pegando o que o usuario informou
         id_ordem = tracker.get_slot("id_ordem")
 
-        # Abre a conexão com o banco
+        # conectando no banco
         conn = get_db_connection()
         cursor = conn.cursor(dictionary=True)
 
         try:
-            # Tenta buscar como ID numérico primeiro
+            # se for numero, busca pelo id da ordem
             if id_ordem.isdigit():
                 query = """
                     SELECT os.id, os.descricao_problema, os.status, os.data_abertura,
@@ -133,7 +129,7 @@ class ActionConsultarStatus(Action):
                 """
                 cursor.execute(query, (int(id_ordem),))
             else:
-                # Se não é número, busca pelo telefone do cliente
+                # se nao for numero, busca pelo telefone
                 query = """
                     SELECT os.id, os.descricao_problema, os.status, os.data_abertura,
                            d.modelo, c.nome
@@ -165,16 +161,14 @@ class ActionConsultarStatus(Action):
         except Exception as e:
             dispatcher.utter_message(text=f"Erro ao consultar: {str(e)}")
 
-        # Fecha a conexão
+        # fechando a conexao
         conn.close()
 
         return [SlotSet("id_ordem", None)]
 
 
-# -------------------------------------------------------
-# Ação 3: Atualizar Email (UPDATE)
-# O formulário email_form já coletou: telefone, novo_email
-# -------------------------------------------------------
+# acao pra atualizar o email do cliente
+# o formulario ja pegou o telefone e o novo email
 class ActionAtualizarEmail(Action):
 
     def name(self) -> Text:
@@ -182,21 +176,21 @@ class ActionAtualizarEmail(Action):
 
     def run(self, dispatcher: CollectingDispatcher, tracker: Tracker, domain: Dict[Text, Any]) -> List[Dict[Text, Any]]:
 
-        # Pega os valores dos slots preenchidos pelo formulário
+        # pegando os dados que o usuario informou
         telefone = tracker.get_slot("telefone")
         novo_email = tracker.get_slot("novo_email")
 
-        # Abre a conexão com o banco
+        # conectando no banco
         conn = get_db_connection()
         cursor = conn.cursor(dictionary=True)
 
         try:
-            # Verifica se o cliente existe
+            # procurando o cliente pelo telefone
             cursor.execute("SELECT id, nome FROM clientes WHERE telefone = %s", (telefone,))
             cliente = cursor.fetchone()
 
             if cliente:
-                # Atualiza o email
+                # achei o cliente, atualiza o email
                 cursor.execute(
                     "UPDATE clientes SET email = %s WHERE telefone = %s",
                     (novo_email, telefone)
@@ -216,7 +210,7 @@ class ActionAtualizarEmail(Action):
         except Exception as e:
             dispatcher.utter_message(text=f"Erro ao atualizar: {str(e)}")
 
-        # Fecha a conexão
+        # fechando a conexao
         conn.close()
 
         return [

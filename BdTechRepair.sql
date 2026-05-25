@@ -1,22 +1,16 @@
--- MySQL Workbench Forward Engineering
+-- script pra criar o banco de dados do projeto
 
 SET @OLD_UNIQUE_CHECKS=@@UNIQUE_CHECKS, UNIQUE_CHECKS=0;
 SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0;
 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='ONLY_FULL_GROUP_BY,STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION';
 
--- -----------------------------------------------------
--- Schema techrepair
--- -----------------------------------------------------
+-- criando o banco techrepair
 
--- -----------------------------------------------------
--- Schema techrepair
--- -----------------------------------------------------
+
 CREATE SCHEMA IF NOT EXISTS `techrepair` DEFAULT CHARACTER SET utf8 ;
 USE `techrepair` ;
 
--- -----------------------------------------------------
--- Table `techrepair`.`clientes`
--- -----------------------------------------------------
+-- tabela de clientes
 CREATE TABLE IF NOT EXISTS `techrepair`.`clientes` (
   `id` INT NOT NULL AUTO_INCREMENT,
   `nome` VARCHAR(100) NOT NULL,
@@ -26,9 +20,7 @@ CREATE TABLE IF NOT EXISTS `techrepair`.`clientes` (
 ENGINE = InnoDB;
 
 
--- -----------------------------------------------------
--- Table `techrepair`.`dispositovos`
--- -----------------------------------------------------
+-- tabela de dispositivos (celulares)
 CREATE TABLE IF NOT EXISTS `techrepair`.`dispositovos` (
   `id` INT NOT NULL AUTO_INCREMENT,
   `modelo` VARCHAR(100) NOT NULL,
@@ -44,9 +36,7 @@ CREATE TABLE IF NOT EXISTS `techrepair`.`dispositovos` (
 ENGINE = InnoDB;
 
 
--- -----------------------------------------------------
--- Table `techrepair`.`tecnicos`
--- -----------------------------------------------------
+-- tabela de tecnicos
 CREATE TABLE IF NOT EXISTS `techrepair`.`tecnicos` (
   `id` INT NOT NULL AUTO_INCREMENT,
   `nome` VARCHAR(100) NOT NULL,
@@ -55,9 +45,7 @@ CREATE TABLE IF NOT EXISTS `techrepair`.`tecnicos` (
 ENGINE = InnoDB;
 
 
--- -----------------------------------------------------
--- Table `techrepair`.`ordens_servico`
--- -----------------------------------------------------
+-- tabela de ordens de servico
 CREATE TABLE IF NOT EXISTS `techrepair`.`ordens_servico` (
   `id` INT NOT NULL AUTO_INCREMENT,
   `descricao_problema` VARCHAR(250) NOT NULL,

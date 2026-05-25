@@ -7,6 +7,7 @@ intents:
   - consultar_status
   - atualizar_email
   - bot_challenge
+  - nlu_fallback
 
 slots:
   nome:
@@ -27,6 +28,14 @@ slots:
             requested_slot: telefone
           - active_loop: email_form
             requested_slot: telefone
+  email:
+    type: text
+    influence_conversation: false
+    mappings:
+      - type: from_text
+        conditions:
+          - active_loop: chamado_form
+            requested_slot: email
   modelo:
     type: text
     influence_conversation: false
@@ -65,6 +74,7 @@ forms:
     required_slots:
       - nome
       - telefone
+      - email
       - modelo
       - problema
   consulta_form:
@@ -90,11 +100,17 @@ responses:
   utter_iamabot:
     - text: "Eu sou o assistente virtual da TechRepair! 🤖"
 
+  utter_default:
+    - text: "Desculpe, não entendi. Pode repetir de outra forma?"
+
   utter_ask_nome:
     - text: "Qual é o seu nome?"
 
   utter_ask_telefone:
     - text: "Qual é o seu telefone? (somente números)"
+
+  utter_ask_email:
+    - text: "Qual é o seu e-mail?"
 
   utter_ask_modelo:
     - text: "Qual é o modelo do celular? (ex: iPhone 13, Galaxy S22)"

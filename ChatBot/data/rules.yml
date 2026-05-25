@@ -17,7 +17,13 @@ rules:
   - intent: bot_challenge
   - action: utter_iamabot
 
-# --- FORMULARIO: Abrir Chamado ---
+# se o bot nao entender a mensagem, pede pra repetir
+- rule: Pedir para repetir quando nao entender
+  steps:
+  - intent: nlu_fallback
+  - action: utter_default
+
+# formulario pra abrir chamado
 - rule: Ativar formulario de chamado
   steps:
   - intent: abrir_chamado
@@ -34,56 +40,7 @@ rules:
     - requested_slot: null
   - action: action_cadastrar_chamado
 
-# Unhappy paths - quando o NLU classifica o texto do formulário como outra intent
-- rule: Chamado form - continuar com intent abrir_chamado
-  condition:
-  - active_loop: chamado_form
-  steps:
-  - intent: abrir_chamado
-  - action: chamado_form
-  - active_loop: chamado_form
-
-- rule: Chamado form - continuar com intent consultar_status
-  condition:
-  - active_loop: chamado_form
-  steps:
-  - intent: consultar_status
-  - action: chamado_form
-  - active_loop: chamado_form
-
-- rule: Chamado form - continuar com intent atualizar_email
-  condition:
-  - active_loop: chamado_form
-  steps:
-  - intent: atualizar_email
-  - action: chamado_form
-  - active_loop: chamado_form
-
-- rule: Chamado form - continuar com intent greet
-  condition:
-  - active_loop: chamado_form
-  steps:
-  - intent: greet
-  - action: chamado_form
-  - active_loop: chamado_form
-
-- rule: Chamado form - continuar com intent goodbye
-  condition:
-  - active_loop: chamado_form
-  steps:
-  - intent: goodbye
-  - action: chamado_form
-  - active_loop: chamado_form
-
-- rule: Chamado form - continuar com intent bot_challenge
-  condition:
-  - active_loop: chamado_form
-  steps:
-  - intent: bot_challenge
-  - action: chamado_form
-  - active_loop: chamado_form
-
-# --- FORMULARIO: Consultar Status ---
+# formulario pra consultar status
 - rule: Ativar formulario de consulta
   steps:
   - intent: consultar_status
@@ -100,40 +57,7 @@ rules:
     - requested_slot: null
   - action: action_consultar_status
 
-# Unhappy paths - consulta_form
-- rule: Consulta form - continuar com intent abrir_chamado
-  condition:
-  - active_loop: consulta_form
-  steps:
-  - intent: abrir_chamado
-  - action: consulta_form
-  - active_loop: consulta_form
-
-- rule: Consulta form - continuar com intent consultar_status
-  condition:
-  - active_loop: consulta_form
-  steps:
-  - intent: consultar_status
-  - action: consulta_form
-  - active_loop: consulta_form
-
-- rule: Consulta form - continuar com intent greet
-  condition:
-  - active_loop: consulta_form
-  steps:
-  - intent: greet
-  - action: consulta_form
-  - active_loop: consulta_form
-
-- rule: Consulta form - continuar com intent goodbye
-  condition:
-  - active_loop: consulta_form
-  steps:
-  - intent: goodbye
-  - action: consulta_form
-  - active_loop: consulta_form
-
-# --- FORMULARIO: Atualizar Email ---
+# formulario pra atualizar email
 - rule: Ativar formulario de email
   steps:
   - intent: atualizar_email
@@ -149,36 +73,3 @@ rules:
   - slot_was_set:
     - requested_slot: null
   - action: action_atualizar_email
-
-# Unhappy paths - email_form
-- rule: Email form - continuar com intent abrir_chamado
-  condition:
-  - active_loop: email_form
-  steps:
-  - intent: abrir_chamado
-  - action: email_form
-  - active_loop: email_form
-
-- rule: Email form - continuar com intent atualizar_email
-  condition:
-  - active_loop: email_form
-  steps:
-  - intent: atualizar_email
-  - action: email_form
-  - active_loop: email_form
-
-- rule: Email form - continuar com intent greet
-  condition:
-  - active_loop: email_form
-  steps:
-  - intent: greet
-  - action: email_form
-  - active_loop: email_form
-
-- rule: Email form - continuar com intent goodbye
-  condition:
-  - active_loop: email_form
-  steps:
-  - intent: goodbye
-  - action: email_form
-  - active_loop: email_form

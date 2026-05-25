@@ -1,0 +1,8 @@
+{
+  "rule_only_slots": [],
+  "rule_only_loops": [
+    "email_form",
+    "chamado_form",
+    "consulta_form"
+  ]
+}
